@@ -1,0 +1,8 @@
+# Ignore compiled binaries
+a.exe
+*.exe
+
+# Ignore CSV data & outputs
+failedCases.csv
+master_data.csv
+output.csv
