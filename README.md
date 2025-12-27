@@ -4,37 +4,56 @@ A robust C++ utility for extracting One-Time Passwords (OTPs) from unstructured 
 
 ## Overview
 
-The project implements a multi-language OTP extraction system (multilang) with C++ as one of the implementations. It analyzes text messages to intelligently extract 4-8 digit OTP codes while filtering out false positives like amounts, account numbers, and card references.
+The project implements OTP extraction system. It analyzes text messages to intelligently extract 4-8 digit OTP codes while filtering out false positives like amounts, account numbers, and card references.
 
 ## Architecture
 
 ### Core Classes
+## Design Architecture
 
-#### `Utility` (Abstract Base Class)
-- **Purpose**: Defines the interface for OTP extraction operations
-- **Key Methods**:
-  - `getMasterDataFilePath()`: Returns the path to the input CSV file
-  - `extractOtp(const string& message)`: Extracts OTP from a message
-  - `readFileData()`: Reads CSV data with proper quote and escape handling
-  - `writeResults(const vector<Result>&)`: Outputs results and statistics
+### 1. `Utility` (Abstract Base Class)
+Defines the **contract** for OTP extraction operations.
 
-#### `Child` (Implementation)
-- **Extends**: `Utility`
-- **Data Source**: `./reduced-master.csv`
-- **OTP Extraction Logic**:
-  1. **Normalization**: Converts to lowercase, removes special markers (`<#>`), handles spacing
-  2. **Tokenization**: Splits text into alphanumeric tokens
-  3. **Keyword Detection**: Identifies OTP-related keywords (otp, code, verification, etc.)
-  4. **Candidate Filtering**: Ensures candidates are 4-8 digit numbers
-  5. **False Positive Elimination**: Filters amounts (Rs, INR), card/account numbers
-  6. **Scoring**: Ranks candidates by proximity to OTP keywords and position
-  7. **Selection**: Returns the highest-scoring candidate
+**Responsibilities:**
+- Provide input data source
+- Read CSV data safely
+- Extract OTP from message text
+- Write output results and statistics
 
-#### `Runner` (Main Entry Point)
-- Orchestrates the entire extraction workflow
-- Processes each row from the CSV file
+**Key Methods:**
+- `getMasterDataFilePath()`
+- `extractOtp(const string& message)`
+- `readFileData()`
+- `writeResults(const vector<Result>& results)`
+
+---
+
+### 2. `Child` (Concrete Implementation)
+Implements OTP extraction logic by extending `Utility`.
+
+**Responsibilities:**
+- Supplies the CSV file path (`./reduced-master.csv`)
+- Implements OTP extraction rules
+
+**OTP Extraction Strategy:**
+- Text normalization
+- Tokenization
+- OTP keyword detection
+- Numeric candidate filtering (4–8 digits)
+- False positive elimination (amounts, cards, accounts)
+- Scoring based on keyword proximity
+- Selection of best candidate
+
+---
+
+### 3. `Runner` (Entry Point)
+Controls the overall execution flow.
+
+**Responsibilities:**
+- Initializes the extractor
+- Iterates through CSV rows
+- Invokes OTP extraction
 - Generates accuracy metrics and output files
-
 ## Input/Output
 
 ### Input Format
